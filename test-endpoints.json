@@ -1,0 +1,1066 @@
+{
+  "info": {
+    "name": "Hospital API Tests",
+    "description": "Complete test suite for Hospital API with custom data structures",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register Admin User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\",\n  \"rol\": \"ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Doctor User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"doctor1\",\n  \"password\": \"doctor123\",\n  \"rol\": \"MEDICO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Patient User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"patient1\",\n  \"password\": \"patient123\",\n  \"rol\": \"PACIENTE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login as Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pacientes",
+      "item": [
+        {
+          "name": "Create Patient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Pérez\",\n  \"documento\": \"12345678\",\n  \"telefono\": \"555-0101\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pacientes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Another Patient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"María\",\n  \"apellido\": \"García\",\n  \"documento\": \"87654321\",\n  \"telefono\": \"555-0102\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pacientes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Patient by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/{{patientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pacientes", "{{patientId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List All Patients",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pacientes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Patients Alphabetically (BST)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes?orden=alfabetico&page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pacientes"],
+              "query": [
+                {
+                  "key": "orden",
+                  "value": "alfabetico"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Patients by Name (Trie)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/search?nombre=Juan",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pacientes", "search"],
+              "query": [
+                {
+                  "key": "nombre",
+                  "value": "Juan"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Patient",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan Carlos\",\n  \"apellido\": \"Pérez\",\n  \"documento\": \"12345678\",\n  \"telefono\": \"555-0101\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/{{patientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pacientes", "{{patientId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Patient",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/{{patientId2}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pacientes", "{{patientId2}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Médicos",
+      "item": [
+        {
+          "name": "Create Doctor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Dr. Carlos\",\n  \"apellido\": \"López\",\n  \"especialidad\": \"Cardiología\",\n  \"telefono\": \"555-0201\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/medicos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "medicos"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Another Doctor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Dra. Ana\",\n  \"apellido\": \"Martínez\",\n  \"especialidad\": \"Pediatría\",\n  \"telefono\": \"555-0202\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/medicos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "medicos"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Doctor by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/medicos/{{doctorId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "medicos", "{{doctorId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List All Doctors",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/medicos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "medicos"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter Doctors by Specialty",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/medicos?especialidad=Cardiología",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "medicos"],
+              "query": [
+                {
+                  "key": "especialidad",
+                  "value": "Cardiología"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Doctor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Dr. Carlos Alberto\",\n  \"apellido\": \"López\",\n  \"especialidad\": \"Cardiología\",\n  \"telefono\": \"555-0201\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/medicos/{{doctorId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "medicos", "{{doctorId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Doctor",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/medicos/{{doctorId2}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "medicos", "{{doctorId2}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Citas",
+      "item": [
+        {
+          "name": "Schedule Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"{{patientId}}\",\n  \"medicoId\": \"{{doctorId}}\",\n  \"fecha\": \"2025-09-15T10:00:00\",\n  \"prioridad\": \"NORMAL\",\n  \"usuarioId\": \"{{adminUserId}}\",\n  \"rol\": \"ADMIN\",\n  \"pacienteNombre\": \"Juan Carlos Pérez\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/citas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "citas"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Schedule Emergency Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"{{patientId2}}\",\n  \"medicoId\": \"{{doctorId2}}\",\n  \"fecha\": \"2025-09-12T14:30:00\",\n  \"prioridad\": \"EMERGENCIA\",\n  \"usuarioId\": \"{{adminUserId}}\",\n  \"rol\": \"ADMIN\",\n  \"pacienteNombre\": \"María García\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/citas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "citas"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Appointment by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas/{{appointmentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "citas", "{{appointmentId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Appointments by Patient",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas?pacienteId={{patientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "citas"],
+              "query": [
+                {
+                  "key": "pacienteId",
+                  "value": "{{patientId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Next Appointment (Priority Queue)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas/next",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "citas", "next"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Attend Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas/{{appointmentId}}/atender",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "citas", "{{appointmentId}}", "atender"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas/{{appointmentId2}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "citas", "{{appointmentId2}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Consultas Médicas",
+      "item": [
+        {
+          "name": "Add Medical Consultation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medico\": {\n    \"id\": \"{{doctorId}}\"\n  },\n  \"fecha\": \"2025-09-12T15:00:00\",\n  \"diagnostico\": \"Hipertensión arterial\",\n  \"tratamiento\": \"Medicación antihipertensiva\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/{{patientId}}/consultas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pacientes", "{{patientId}}", "consultas"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Another Consultation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medico\": {\n    \"id\": \"{{doctorId2}}\"\n  },\n  \"fecha\": \"2025-09-12T16:00:00\",\n  \"diagnostico\": \"Control de presión arterial\",\n  \"tratamiento\": \"Seguimiento mensual\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/{{patientId}}/consultas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pacientes", "{{patientId}}", "consultas"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Patient Medical History (DoublyLinkedList)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/{{patientId}}/consultas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pacientes", "{{patientId}}", "consultas"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Consultations by ID (HashMap)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/consultas/buscar/{{consultationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "consultas", "buscar", "{{consultationId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Autocomplete Diagnoses (Trie)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/consultas/diagnosticos?prefijo=Hiper",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "consultas", "diagnosticos"],
+              "query": [
+                {
+                  "key": "prefijo",
+                  "value": "Hiper"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Chatbot",
+      "item": [
+        {
+          "name": "Get Chatbot Help",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/chatbot/help",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chatbot", "help"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Topics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/chatbot/topics",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chatbot", "topics"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ask About Appointments",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"¿Cómo puedo agendar una cita médica?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chatbot/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chatbot", "chat"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ask About Emergency",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"¿Qué hago en caso de emergencia?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chatbot/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chatbot", "chat"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ask About Medical History",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"¿Cómo puedo ver mi historial médico?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chatbot/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chatbot", "chat"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ask About Costs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"¿Cuáles son los costos de las consultas?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chatbot/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chatbot", "chat"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ask About Specialists",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"¿Qué especialistas están disponibles?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chatbot/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chatbot", "chat"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ask Random Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"¿Cuál es el mejor restaurante cerca del hospital?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chatbot/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chatbot", "chat"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sistema y Reportes",
+      "item": [
+        {
+          "name": "Get Hospital Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reportes/estadisticas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reportes", "estadisticas"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Patient Recommendations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reportes/recomendaciones?pacienteId={{patientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reportes", "recomendaciones"],
+              "query": [
+                {
+                  "key": "pacienteId",
+                  "value": "{{patientId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Action History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/system/actions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "system", "actions"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Undo Last Action (Stack)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/system/undo",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "system", "undo"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "adminToken",
+      "value": "REPLACE_WITH_TOKEN_FROM_LOGIN"
+    },
+    {
+      "key": "patientId",
+      "value": "REPLACE_WITH_PATIENT_ID_FROM_CREATE"
+    },
+    {
+      "key": "patientId2",
+      "value": "REPLACE_WITH_SECOND_PATIENT_ID"
+    },
+    {
+      "key": "doctorId",
+      "value": "REPLACE_WITH_DOCTOR_ID_FROM_CREATE"
+    },
+    {
+      "key": "doctorId2",
+      "value": "REPLACE_WITH_SECOND_DOCTOR_ID"
+    },
+    {
+      "key": "appointmentId",
+      "value": "REPLACE_WITH_APPOINTMENT_ID_FROM_CREATE"
+    },
+    {
+      "key": "appointmentId2",
+      "value": "REPLACE_WITH_SECOND_APPOINTMENT_ID"
+    },
+    {
+      "key": "consultationId",
+      "value": "REPLACE_WITH_CONSULTATION_ID_FROM_CREATE"
+    },
+    {
+      "key": "adminUserId",
+      "value": "REPLACE_WITH_USER_ID_FROM_REGISTER"
+    }
+  ]
+}
