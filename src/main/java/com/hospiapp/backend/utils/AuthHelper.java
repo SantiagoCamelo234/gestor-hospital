@@ -14,7 +14,7 @@ public class AuthHelper {
     }
 
     public Usuario verificarToken(String token, Usuario.Rol... rolesPermitidos) {
-        Usuario usuario = authService.validarToken(token);
+        Usuario usuario = authService.getCurrentUser(token, null);
 
         // Asignar asociadoId si es null y es PACIENTE
         if (usuario.getRol() == Usuario.Rol.PACIENTE && usuario.getAsociadoId() == null) {

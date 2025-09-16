@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login - Hospital System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 20px; padding: 10px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Login - Hospital System</h1>
+        
+        <div class="info">
+            <h3>📋 Test Credentials:</h3>
+            <p><strong>Admin:</strong> admin / admin123</p>
+            <p><strong>Doctor:</strong> doctor / doctor123</p>
+            <p><strong>Patient:</strong> patient / patient123</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" value="admin" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" value="admin123" required>
+            </div>
+            <button type="submit">🔐 Test Login</button>
+        </form>
+
+        <div id="result"></div>
+        
+        <div id="nextSteps" style="display: none;">
+            <h3>✅ Login Successful!</h3>
+            <p>Now you can:</p>
+            <ol>
+                <li>Go to the <a href="login.html" target="_blank">main login page</a></li>
+                <li>Use the same credentials to log in</li>
+                <li>Access the admin dashboard</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('result');
+            const nextStepsDiv = document.getElementById('nextSteps');
+            
+            try {
+                resultDiv.innerHTML = '<div class="info">🔄 Testing login...</div>';
+                
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Login Successful!</h3>
+                            <p><strong>Token:</strong> ${data.token}</p>
+                            <p><strong>User:</strong> ${data.usuario.username} (${data.usuario.rol})</p>
+                        </div>
+                    `;
+                    nextStepsDiv.style.display = 'block';
+                } else {
+                    const error = await response.text();
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ Login Failed</h3>
+                            <p>Status: ${response.status}</p>
+                            <p>Error: ${error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Connection Error</h3>
+                        <p>Error: ${error.message}</p>
+                        <p>Make sure the backend is running on port 8080</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+

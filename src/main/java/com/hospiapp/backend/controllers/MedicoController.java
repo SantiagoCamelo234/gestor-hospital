@@ -22,38 +22,28 @@ public class MedicoController {
     }
 
     @PostMapping
-    public Medico crear(@RequestHeader("Authorization") String token,
-                        @RequestBody Medico medico) {
-        authHelper.verificarToken(token, Usuario.Rol.ADMIN);
+    public Medico crear(@RequestBody Medico medico) {
         return service.crear(medico);
     }
 
     @GetMapping("/{id}")
-    public Medico obtener(@RequestHeader("Authorization") String token,
-                          @PathVariable String id) {
-        authHelper.verificarToken(token, Usuario.Rol.ADMIN);
+    public Medico obtener(@PathVariable String id) {
         return service.obtener(id).orElseThrow(() -> new RuntimeException("Médico no encontrado"));
     }
 
     @PutMapping("/{id}")
-    public Medico actualizar(@RequestHeader("Authorization") String token,
-                             @PathVariable String id,
+    public Medico actualizar(@PathVariable String id,
                              @RequestBody Medico cambios) {
-        authHelper.verificarToken(token, Usuario.Rol.ADMIN);
         return service.actualizar(id, cambios);
     }
 
     @DeleteMapping("/{id}")
-    public void eliminar(@RequestHeader("Authorization") String token,
-                         @PathVariable String id) {
-        authHelper.verificarToken(token, Usuario.Rol.ADMIN);
+    public void eliminar(@PathVariable String id) {
         if (!service.eliminar(id)) throw new RuntimeException("Médico no encontrado");
     }
 
     @GetMapping
-    public List<Medico> listar(@RequestHeader("Authorization") String token,
-                               @RequestParam(value = "especialidad", required = false) String especialidad) {
-        authHelper.verificarToken(token, Usuario.Rol.ADMIN);
+    public List<Medico> listar(@RequestParam(value = "especialidad", required = false) String especialidad) {
         if (especialidad != null && !especialidad.isBlank()) {
             return service.filtrarPorEspecialidad(especialidad);
         }

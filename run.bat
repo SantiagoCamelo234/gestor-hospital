@@ -17,3 +17,14 @@ echo La API estara disponible en: http://localhost:8080
 echo Para detener el servidor presiona Ctrl+C
 echo.
 call mvn spring-boot:run
+
+
+
+
+
+
+
+
+
+
+

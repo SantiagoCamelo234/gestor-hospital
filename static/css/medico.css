@@ -1,0 +1,8 @@
+body { background-color: #f4f6f9; }
+.navbar { background-color: #0069d9; }
+.navbar-brand, .nav-link, .navbar-text { color: #fff !important; }
+.card { border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.cita-card { margin-bottom: 1rem; }
+.priority-EMERGENCIA { border-left: 6px solid #dc3545; }
+.priority-URGENTE { border-left: 6px solid #ffc107; }
+.priority-NORMAL { border-left: 6px solid #17a2b8; }

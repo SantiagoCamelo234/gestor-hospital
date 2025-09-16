@@ -27,10 +27,8 @@ public class PacienteController {
     }
 
     @PostMapping
-    public ResponseEntity<?> crear(@RequestHeader("Authorization") String token,
-                                   @RequestBody Paciente paciente) {
+    public ResponseEntity<?> crear(@RequestBody Paciente paciente) {
         try {
-            authHelper.verificarToken(token, Usuario.Rol.ADMIN);
             Paciente resultado = service.crear(paciente);
             return ResponseEntity.ok(resultado);
         } catch (Exception e) {
@@ -39,12 +37,10 @@ public class PacienteController {
     }
 
     @GetMapping
-    public ResponseEntity<?> listar(@RequestHeader("Authorization") String token,
-                                    @RequestParam(value = "orden", required = false) String orden,
+    public ResponseEntity<?> listar(@RequestParam(value = "orden", required = false) String orden,
                                     @RequestParam(value = "page", required = false, defaultValue = "0") int page,
                                     @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
         try {
-            authHelper.verificarToken(token, Usuario.Rol.ADMIN);
             List<Paciente> all = service.listar();
             if ("alfabetico".equalsIgnoreCase(orden)) {
                 // construir BST por nombre completo
@@ -69,14 +65,8 @@ public class PacienteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> obtener(@RequestHeader("Authorization") String token,
-                                     @PathVariable String id) {
+    public ResponseEntity<?> obtener(@PathVariable String id) {
         try {
-            Usuario usuario = authHelper.verificarToken(token, Usuario.Rol.ADMIN, Usuario.Rol.PACIENTE);
-            // Paciente solo puede acceder a su propio registro
-            if (usuario.getRol() == Usuario.Rol.PACIENTE && !usuario.getAsociadoId().equals(id)) {
-                throw new RuntimeException("No autorizado para acceder a otro paciente");
-            }
             Paciente paciente = service.obtener(id).orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
             return ResponseEntity.ok(paciente);
         } catch (Exception e) {
@@ -85,11 +75,9 @@ public class PacienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(@RequestHeader("Authorization") String token,
-                                        @PathVariable String id,
+    public ResponseEntity<?> actualizar(@PathVariable String id,
                                         @RequestBody Paciente cambios) {
         try {
-            authHelper.verificarToken(token, Usuario.Rol.ADMIN);
             Paciente resultado = service.actualizar(id, cambios);
             return ResponseEntity.ok(resultado);
         } catch (Exception e) {
@@ -98,10 +86,8 @@ public class PacienteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@RequestHeader("Authorization") String token,
-                                      @PathVariable String id) {
+    public ResponseEntity<?> eliminar(@PathVariable String id) {
         try {
-            authHelper.verificarToken(token, Usuario.Rol.ADMIN);
             service.eliminar(id);
             return ResponseEntity.ok().body("Paciente eliminado correctamente");
         } catch (Exception e) {
@@ -110,10 +96,8 @@ public class PacienteController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> buscarPorPrefijo(@RequestHeader("Authorization") String token,
-                                              @RequestParam("nombre") String nombre) {
+    public ResponseEntity<?> buscarPorPrefijo(@RequestParam("nombre") String nombre) {
         try {
-            authHelper.verificarToken(token, Usuario.Rol.ADMIN);
             // construir Trie on-demand con nombres actuales
             for (Paciente p : service.listar()) {
                 String full = ((p.getNombre() == null ? "" : p.getNombre()) + " " + (p.getApellido() == null ? "" : p.getApellido())).trim();

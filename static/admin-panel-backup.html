@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>HospiApp · Panel Administrador</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="http://localhost:8080/static/css/admin.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="d-flex">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar d-flex flex-column p-3">
+        <div class="mb-4 text-center">
+            <h4 class="mb-0 fw-bold">🏥 HospiApp</h4>
+            <small>Panel Administrador</small>
+        </div>
+
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link active" href="#" data-section="dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a class="nav-link" href="#" data-section="pacientes"><i class="bi bi-people-fill me-2"></i> Pacientes</a>
+            <a class="nav-link" href="#" data-section="medicos"><i class="bi bi-person-badge-fill me-2"></i> Médicos</a>
+            <a class="nav-link" href="#" data-section="citas"><i class="bi bi-calendar-check-fill me-2"></i> Citas</a>
+            <a class="nav-link" href="#" data-section="consultas"><i class="bi bi-journal-text me-2"></i> Consultas</a>
+            <a class="nav-link" href="#" data-section="usuarios"><i class="bi bi-shield-lock-fill me-2"></i> Usuarios</a>
+            <a class="nav-link" href="#" data-section="reportes"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Reportes</a>
+            <a class="nav-link" href="#" data-section="sistema"><i class="bi bi-gear-fill me-2"></i> Sistema</a>
+        </nav>
+
+        <div class="mt-auto pt-3 small text-center">
+            <div>Conectado como <b>ADMIN</b></div>
+            <button class="btn btn-outline-light btn-sm mt-2" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="flex-fill">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-light d-lg-none" id="sidebarToggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <h5 class="mb-0">Panel Administrador</h5>
+                <small class="small-muted ms-2">Gestión completa — pacientes, médicos, citas y reportes</small>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="input-group" style="width:320px;">
+                    <input id="globalSearch" class="form-control form-control-sm" placeholder="Buscar paciente, médico, cita..." onkeydown="if(event.key==='Enter') globalSearchDo()">
+                    <button class="btn btn-outline-secondary btn-sm" onclick="globalSearchDo()"><i class="bi bi-search"></i></button>
+                </div>
+                <div class="d-flex align-items-center">
+                    <img src="https://i.pravatar.cc/40?u=admin" class="rounded-circle me-2" alt="admin">
+                    <div class="text-end">
+                        <div style="font-weight:700">Administrador</div>
+                        <div class="small-muted">hospiadmin@ejemplo.com</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <main class="p-4">
+            <!-- DASHBOARD -->
+            <section id="dashboardSection">
+                <div class="container-fluid">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <div class="card card-rounded p-3 shadow-sm">
+                                <div class="small-muted">Pacientes</div>
+                                <div class="stat text-primary" id="statPacientes">0</div>
+                                <div class="small-muted">Registrados</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-rounded p-3 shadow-sm">
+                                <div class="small-muted">Médicos</div>
+                                <div class="stat text-success" id="statMedicos">0</div>
+                                <div class="small-muted">Activos</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-rounded p-3 shadow-sm">
+                                <div class="small-muted">Citas</div>
+                                <div class="stat text-warning" id="statCitas">0</div>
+                                <div class="small-muted">Programadas</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-rounded p-3 shadow-sm">
+                                <div class="small-muted">Consultas</div>
+                                <div class="stat text-danger" id="statConsultas">0</div>
+                                <div class="small-muted">Realizadas</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-lg-8">
+                            <div class="card p-3 card-rounded shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0">Últimas citas</h6>
+                                    <small class="small-muted">Actualizado hace <span id="lastUpdate">ahora</span></small>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th><th>Paciente</th><th>Médico</th><th>Fecha</th><th>Prioridad</th><th>Acciones</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="latestCitasTable">
+                                        <!-- filas generadas dinámicamente -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="card p-3 card-rounded shadow-sm">
+                                <h6 class="mb-3">Atajos</h6>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" onclick="showSection('pacientes')"><i class="bi bi-people-fill me-1"></i> Gestionar Pacientes</button>
+                                    <button class="btn btn-success" onclick="showSection('medicos')"><i class="bi bi-person-badge-fill me-1"></i> Gestionar Médicos</button>
+                                    <button class="btn btn-warning" onclick="showSection('citas')"><i class="bi bi-calendar3 me-1"></i> Gestionar Citas</button>
+                                    <button class="btn btn-outline-secondary" onclick="showSection('reportes')"><i class="bi bi-file-earmark-bar-graph me-1"></i> Generar Reporte</button>
+                                </div>
+                            </div>
+
+                            <div class="card p-3 mt-3 card-rounded shadow-sm">
+                                <h6 class="mb-3">Notificaciones</h6>
+                                <ul class="list-unstyled mb-0 small" id="notificationsList">
+                                    <li>✔️ Base de datos ok</li>
+                                    <li>⚠️ 2 citas sin confirmar</li>
+                                    <li>🆕 1 usuario pendiente</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PACIENTES -->
+            <section id="pacientesSection" style="display:none;">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Gestión de Pacientes</h4>
+                        <div>
+                            <button class="btn btn-outline-primary me-2" onclick="exportPacientes()">Exportar CSV</button>
+                            <button class="btn btn-primary" onclick="openModalCrearPaciente()">➕ Nuevo Paciente</button>
+                        </div>
+                    </div>
+
+                    <!-- Formulario Crear -->
+                    <div class="card p-3 card-rounded shadow-sm mb-3">
+                        <h5 class="mb-3">Crear Paciente</h5>
+                        <form id="form-crear-paciente" class="row g-2">
+                            <div class="col-md-6">
+                                <input type="text" id="crear-nombre" placeholder="Nombre" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="crear-apellido" placeholder="Apellido" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="number" id="crear-edad" placeholder="Edad" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="crear-telefono" placeholder="Teléfono" class="form-control">
+                            </div>
+                            <div class="col-12">
+                                <textarea id="crear-direccion" placeholder="Dirección" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Crear Paciente</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Buscador -->
+                    <div class="card p-3 card-rounded shadow-sm mb-3">
+                        <h5 class="mb-3">Buscar Paciente</h5>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <input id="pacienteSearch" class="form-control" placeholder="Buscar por nombre, apellido o documento..." oninput="debouncedSearchPacientes()">
+                            </div>
+                            <div class="col-md-6 text-end small-muted">Resultados: <span id="pacientesCount">0</span></div>
+                        </div>
+                        <ul id="resultados-busqueda" class="list-unstyled mt-3 small-muted"></ul>
+                    </div>
+
+                    <!-- Lista de Pacientes -->
+                    <div class="card p-3 card-rounded shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Lista de Pacientes</h5>
+                            <button onclick="listarPacientes()" class="btn btn-success btn-sm">Refrescar Lista</button>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                <tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Edad</th><th>Teléfono</th><th>Acciones</th></tr>
+                                </thead>
+                                <tbody id="pacientesTableBody">
+                                <!-- dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <nav class="mt-3" aria-label="paginacion">
+                            <ul class="pagination" id="pacientesPagination"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MEDICOS -->
+            <section id="medicosSection" style="display:none;">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Médicos</h4>
+                        <div>
+                            <button class="btn btn-primary" onclick="openModalCrearMedico()">➕ Nuevo Médico</button>
+                        </div>
+                    </div>
+
+                    <div class="card p-3 card-rounded shadow-sm">
+                        <div class="table-wrapper">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                <tr><th>ID</th><th>Nombre</th><th>Especialidad</th><th>Teléfono</th><th>Acciones</th></tr>
+                                </thead>
+                                <tbody id="medicosTableBody">
+                                <!-- dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CITAS -->
+            <section id="citasSection" style="display:none;">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Citas</h4>
+                        <div>
+                            <button class="btn btn-outline-secondary me-2" onclick="filtrarCitas()">Filtrar</button>
+                            <button class="btn btn-success" onclick="openModalCrearCita()">➕ Crear Cita</button>
+                        </div>
+                    </div>
+
+                    <div class="card p-3 card-rounded shadow-sm">
+                        <div class="table-wrapper">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                <tr><th>ID</th><th>Paciente</th><th>Médico</th><th>Fecha</th><th>Prioridad</th><th>Acciones</th></tr>
+                                </thead>
+                                <tbody id="citasTableBody">
+                                <!-- dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONSULTAS -->
+            <section id="consultasSection" style="display:none;">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Consultas</h4>
+                        <div>
+                            <button class="btn btn-outline-primary me-2" onclick="openModalRegistroConsulta()">Registrar Consulta</button>
+                        </div>
+                    </div>
+
+                    <div class="card p-3 card-rounded shadow-sm">
+                        <div class="table-wrapper">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                <tr><th>ID</th><th>Cita</th><th>Médico</th><th>Paciente</th><th>Resumen</th><th>Fecha</th></tr>
+                                </thead>
+                                <tbody id="consultasTableBody">
+                                <!-- dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- USUARIOS -->
+            <section id="usuariosSection" style="display:none;">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Usuarios del Sistema</h4>
+                        <div>
+                            <button class="btn btn-primary" onclick="openModalCrearUsuario()">➕ Nuevo Usuario</button>
+                        </div>
+                    </div>
+
+                    <div class="card p-3 card-rounded shadow-sm">
+                        <div class="table-wrapper">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                <tr><th>ID</th><th>Username</th><th>Rol</th><th>Asociado</th><th>Acciones</th></tr>
+                                </thead>
+                                <tbody id="usuariosTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- REPORTES -->
+            <section id="reportesSection" style="display:none;">
+                <div class="container-fluid">
+                    <h4>Reportes</h4>
+                    <div class="card p-3 card-rounded shadow-sm">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Tipo de reporte</label>
+                                <select id="reporteTipo" class="form-select mb-2">
+                                    <option value="pacientes">Pacientes</option>
+                                    <option value="medicos">Médicos</option>
+                                    <option value="citas">Citas</option>
+                                    <option value="consultas">Consultas</option>
+                                </select>
+                                <button class="btn btn-primary w-100" onclick="generarReporte()">Generar</button>
+                            </div>
+                            <div class="col-md-8">
+                                <div id="reportePreview" class="border rounded p-3" style="min-height:160px;">
+                                    Previsualización del reporte...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SISTEMA -->
+            <section id="sistemaSection" style="display:none;">
+                <div class="container-fluid">
+                    <h4>Sistema</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card p-3 card-rounded shadow-sm mb-3">
+                                <h6>Logs recientes</h6>
+                                <pre id="systemLogs" style="max-height:300px;overflow:auto;background:#f8f9fa;padding:12px;border-radius:8px;">No hay logs en esta maqueta</pre>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card p-3 card-rounded shadow-sm mb-3">
+                                <h6>Configuraciones</h6>
+                                <div class="mb-2">
+                                    <label class="form-label small-muted">Puerto API</label>
+                                    <input id="cfgApiPort" class="form-control" value="8080">
+                                </div>
+                                <button class="btn btn-outline-secondary" onclick="saveConfig()">Guardar configuración</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="border-top">
+            <div class="d-flex justify-content-between">
+                <div>© HospiApp</div>
+                <div class="small-muted">Versión demo · Interfaz de administración</div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<!-- MODALES -->
+
+<!-- Modal Crear/Editar Paciente -->
+<div class="modal fade" id="modalPaciente" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content card-rounded">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPacienteTitle">Crear Paciente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formPaciente">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre</label>
+                            <input id="paciente_nombre" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Apellido</label>
+                            <input id="paciente_apellido" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Documento</label>
+                            <input id="paciente_documento" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Teléfono</label>
+                            <input id="paciente_telefono" class="form-control">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Dirección</label>
+                            <input id="paciente_direccion" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha de nacimiento</label>
+                            <input id="paciente_nacimiento" type="date" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input id="paciente_email" type="email" class="form-control">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveUsuario()">Crear Usuario</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="http://localhost:8080/static/js/admin.js?v=2" defer></script>
+</script>
+</body>
+</html>
+        
+</html>
+        
+        try {
+            const res = await fetch('/api/auth/me', { headers: { 'Authorization': token }});
+            if(!res.ok){
+                localStorage.clear();
+                window.location.href = '/login.html';
+                return false;
+            }
+            const me = await res.json();
+            // Opcional: bloquear si no es ADMIN
+            if(me.rol !== 'ADMIN'){
+                // redirigir según rol
+                if(me.rol === 'MEDICO') window.location.href = '/medico.html';
+                else window.location.href = '/paciente.html';
+                return false;
+            }
+            // pintar nombre
+            document.querySelector('.topbar .text-end div[style*="font-weight:700"]').textContent = me.username;
+            return true;
+        } catch(e){
+            console.error(e);
+            window.location.href = '/login.html';
+            return false;
+        }
+    }
+
+    function toggleSidebar(){
+        const sb = document.querySelector('.sidebar');
+        if(sb.style.display === 'none' || getComputedStyle(sb).display === 'none') sb.style.display = '';
+        else sb.style.display = 'none';
+    }
+
+    function showSection(name) {
+        // hide all
+        const sections = ['dashboard','pacientes','medicos','citas','consultas','usuarios','reportes','sistema'];
+        sections.forEach(s => document.getElementById(s + 'Section').style.display = 'none');
+        // show selected
+        document.getElementById(name + 'Section').style.display = '';
+        currentSection = name;
+        // update sidebar active
+        document.querySelectorAll('.sidebar .nav-link').forEach(a => a.classList.remove('active'));
+        const link = document.querySelector('.sidebar .nav-link[data-section="'+name+'"]');
+        if(link) link.classList.add('active');
+        // lazy load content
+        if(name === 'pacientes') {
+            loadPacientes();
+            listarPacientes(); // Load real data from API
+        }
+        if(name === 'medicos') loadMedicos();
+        if(name === 'citas') loadCitas();
+        if(name === 'consultas') loadConsultas();
+        if(name === 'usuarios') loadUsuarios();
+        if(name === 'reportes') loadReportes();
+        if(name === 'sistema') loadSystemInfo();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.sidebar .nav-link').forEach(a => {
+            a.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                const s = a.getAttribute('data-section');
+                if(s) showSection(s);
+            });
+        });
+
+        // Create Patient Form Handler
+        const formCrear = document.getElementById('form-crear-paciente');
+        if (formCrear) {
+            formCrear.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const paciente = {
+                    nombre: document.getElementById('crear-nombre').value,
+                    apellido: document.getElementById('crear-apellido').value,
+                    edad: parseInt(document.getElementById('crear-edad').value) || null,
+                    telefono: document.getElementById('crear-telefono').value,
+                    direccion: document.getElementById('crear-direccion').value,
+                };
+                
+                try {
+                    const res = await fetch(API_URL, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": token
+                        },
+                        body: JSON.stringify(paciente)
+                    });
+                    
+                    if (res.ok) {
+                        alert("Paciente creado exitosamente!");
+                        formCrear.reset();
+                        listarPacientes();
+                        // Update stats
+                        const currentStats = getCurrentStats();
+                        setStats({...currentStats, pacientes: currentStats.pacientes + 1});
+                    } else {
+                        const errorData = await res.text();
+                        alert("Error creando paciente: " + errorData);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert("Error de conexión al crear paciente");
+                    // Fallback to mock behavior
+                    savePacienteMock();
+                }
+            });
+        }
+    });
+
+    // global search stub
+    function globalSearchDo(){
+        const q = document.getElementById('globalSearch').value.trim();
+        if(!q) return alert('Escribe algo para buscar');
+        // aquí puedes redirigir a la sección correspondiente y aplicar el filtro
+        alert('Buscar: ' + q + '\\n(En la maqueta esto solo muestra una alerta)');
+    }
+
+    function logout(){
+        // en la integración real, limpia localStorage y redirige a login
+        // localStorage.clear();
+        // window.location.href = '/login.html';
+        alert('Cerrar sesión (maqueta)');
+    }
+
+    // -------------------------
+    // DATA LOADING (maqueta)
+    // -------------------------
+    function setStats({pacientes=0, medicos=0, citas=0, consultas=0} = {}) {
+        document.getElementById('statPacientes').textContent = pacientes;
+        document.getElementById('statMedicos').textContent = medicos;
+        document.getElementById('statCitas').textContent = citas;
+        document.getElementById('statConsultas').textContent = consultas;
+    }
+
+    function loadDashboardMock() {
+        // valores demo
+        setStats({pacientes: 234, medicos: 18, citas: 72, consultas: 450});
+        document.getElementById('lastUpdate').textContent = 'hace 1 min';
+        // crear filas demo
+        const sample = [
+            {id:'C-101', paciente:'María Pérez', medico:'Dr. López', fecha:'2025-09-20 09:00', prioridad:'URGENTE'},
+            {id:'C-100', paciente:'Juan Gómez', medico:'Dra. Ruiz', fecha:'2025-09-20 10:30', prioridad:'NORMAL'},
+            {id:'C-99', paciente:'Ana Torres', medico:'Dr. Vélez', fecha:'2025-09-19 15:00', prioridad:'EMERGENCIA'},
+        ];
+        const tbody = document.getElementById('latestCitasTable');
+        tbody.innerHTML = sample.map(r => `
+      <tr>
+        <td>${r.id}</td>
+        <td>${r.paciente}</td>
+        <td>${r.medico}</td>
+        <td>${r.fecha}</td>
+        <td><span class="badge ${r.prioridad==='EMERGENCIA'?'bg-danger':r.prioridad==='URGENTE'?'bg-warning text-dark':'bg-success'}">${r.prioridad}</span></td>
+        <td>
+          <button class="btn btn-sm btn-outline-primary" onclick="openCitaDetail('${r.id}')"><i class="bi bi-eye"></i></button>
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteCita('${r.id}')"><i class="bi bi-trash"></i></button>
+        </td>
+      </tr>
+    `).join('');
+    }
+
+    // -------------------------
+    // API PATIENT MANAGEMENT
+    // -------------------------
+
+    // List Patients from API
+    async function listarPacientes() {
+        try {
+            const res = await fetch(`${API_URL}?orden=alfabetico&page=0&size=50`, {
+                headers: { "Authorization": token }
+            });
+            
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById('pacientesCount').textContent = data.length;
+                const tbody = document.getElementById('pacientesTableBody');
+                tbody.innerHTML = "";
+                
+                data.forEach(p => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${p.id}</td>
+                            <td>${p.nombre}</td>
+                            <td>${p.apellido}</td>
+                            <td>${p.edad || '-'}</td>
+                            <td>${p.telefono || '-'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="viewPaciente('${p.id}')"><i class="bi bi-eye"></i></button>
+                                <button class="btn btn-sm btn-outline-success" onclick="editPaciente('${p.id}')"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="eliminarPacienteAPI('${p.id}')"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>`;
+                });
+                renderPacientesPagination();
+            } else {
+                throw new Error('API not available');
+            }
+        } catch (error) {
+            console.error('Error fetching patients:', error);
+            // Fallback to mock data
+            loadPacientes();
+        }
+    }
+
+    // Delete Patient via API
+    async function eliminarPacienteAPI(id) {
+        if (!confirm("¿Seguro que deseas eliminar este paciente?")) return;
+        
+        try {
+            const res = await fetch(`${API_URL}/${id}`, {
+                method: "DELETE",
+                headers: { "Authorization": token }
+            });
+            
+            if (res.ok) {
+                alert("Paciente eliminado exitosamente");
+                listarPacientes();
+                // Update stats
+                const currentStats = getCurrentStats();
+                setStats({...currentStats, pacientes: Math.max(0, currentStats.pacientes - 1)});
+            } else {
+                alert("Error al eliminar paciente");
+            }
+        } catch (error) {
+            console.error('Error deleting patient:', error);
+            alert("Error de conexión al eliminar paciente");
+            // Fallback to mock behavior
+            deletePaciente(id);
+        }
+    }
+
+    // Search Patients via API
+    async function searchPacientesAPI(query) {
+        if (query.length < 2) {
+            document.getElementById('resultados-busqueda').innerHTML = '';
+            return;
+        }
+        
+        try {
+            const res = await fetch(`${API_URL}/search?nombre=${encodeURIComponent(query)}`, {
+                headers: { "Authorization": token }
+            });
+            
+            if (res.ok) {
+                const data = await res.json();
+                const ul = document.getElementById('resultados-busqueda');
+                ul.innerHTML = data.map(nombre => `<li>• ${nombre}</li>`).join("");
+            } else {
+                throw new Error('Search API not available');
+            }
+        } catch (error) {
+            console.error('Error searching patients:', error);
+            // Fallback to mock search
+            searchPacientesMock(query);
+        }
+    }
+
+    // Helper function to get current stats
+    function getCurrentStats() {
+        return {
+            pacientes: parseInt(document.getElementById('statPacientes').textContent) || 0,
+            medicos: parseInt(document.getElementById('statMedicos').textContent) || 0,
+            citas: parseInt(document.getElementById('statCitas').textContent) || 0,
+            consultas: parseInt(document.getElementById('statConsultas').textContent) || 0
+        };
+    }
+
+    // PACIENTES (maqueta - fallback)
+    let pacientesMock = [];
+    function loadPacientes(page=1) {
+        // demo: genera 25 pacientes
+        if(pacientesMock.length === 0){
+            for(let i=1;i<=25;i++){
+                pacientesMock.push({
+                    id: 'P-'+String(i).padStart(3,'0'),
+                    nombre: 'Paciente '+i,
+                    apellido: 'Apellido '+i,
+                    edad: 25 + (i % 50),
+                    documento: 'DOC'+(1000+i),
+                    telefono: '+57 300 000 '+String(i).padStart(3,'0')
+                });
+            }
+        }
+        document.getElementById('pacientesCount').textContent = pacientesMock.length;
+        const start = 0;
+        const rows = pacientesMock.map(p => `<tr>
+        <td>${p.id}</td>
+        <td>${p.nombre}</td>
+        <td>${p.apellido}</td>
+        <td>${p.edad}</td>
+        <td>${p.telefono}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-primary" onclick="viewPaciente('${p.id}')"><i class="bi bi-eye"></i></button>
+          <button class="btn btn-sm btn-outline-success" onclick="editPaciente('${p.id}')"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-outline-danger" onclick="confirmDeletePaciente('${p.id}')"><i class="bi bi-trash"></i></button>
+        </td>
+      </tr>`).join('');
+        document.getElementById('pacientesTableBody').innerHTML = rows;
+        renderPacientesPagination();
+    }
+
+    function renderPacientesPagination(){
+        const ul = document.getElementById('pacientesPagination');
+        ul.innerHTML = `
+      <li class="page-item disabled"><a class="page-link">Anterior</a></li>
+      <li class="page-item active"><a class="page-link">1</a></li>
+      <li class="page-item"><a class="page-link">2</a></li>
+      <li class="page-item"><a class="page-link">Siguiente</a></li>
+    `;
+    }
+
+    function openModalCrearPaciente(){
+        document.getElementById('modalPacienteTitle').textContent = 'Crear Paciente';
+        // limpiar form
+        document.getElementById('formPaciente').reset();
+        new bootstrap.Modal(document.getElementById('modalPaciente')).show();
+    }
+
+    function viewPaciente(id){
+        alert('Ver paciente: ' + id + ' (maqueta)');
+    }
+    function editPaciente(id){
+        // populate demo values and open modal
+        const p = pacientesMock.find(x => x.id === id);
+        if(!p) return alert('Paciente no encontrado (maqueta)');
+        document.getElementById('paciente_nombre').value = p.nombre;
+        document.getElementById('paciente_apellido').value = p.apellido;
+        document.getElementById('paciente_documento').value = p.documento;
+        document.getElementById('paciente_telefono').value = p.telefono;
+        document.getElementById('paciente_direccion').value = 'Calle demo';
+        document.getElementById('paciente_nacimiento').value = '1990-01-01';
+        document.getElementById('paciente_email').value = 'demo@example.com';
+        document.getElementById('modalPacienteTitle').textContent = 'Editar Paciente';
+        new bootstrap.Modal(document.getElementById('modalPaciente')).show();
+    }
+    function confirmDeletePaciente(id){
+        if(confirm('Eliminar paciente ' + id + '?')) {
+            deletePaciente(id);
+        }
+    }
+    function savePaciente(){
+        // obtener campos simple
+        const nuevo = {
+            id: 'P-'+String(Math.floor(Math.random()*1000)).padStart(3,'0'),
+            nombre: document.getElementById('paciente_nombre').value || 'Sin nombre',
+            apellido: document.getElementById('paciente_apellido').value || 'Sin apellido',
+            documento: document.getElementById('paciente_documento').value || '---',
+            telefono: document.getElementById('paciente_telefono').value || '---'
+        };
+        pacientesMock.unshift(nuevo);
+        bootstrap.Modal.getInstance(document.getElementById('modalPaciente')).hide();
+        loadPacientes();
+        alert('Paciente guardado (maqueta)');
+    }
+
+    function savePacienteMock(){
+        const nuevo = {
+            id: 'P-'+String(Math.floor(Math.random()*1000)).padStart(3,'0'),
+            nombre: document.getElementById('crear-nombre').value || 'Sin nombre',
+            apellido: document.getElementById('crear-apellido').value || 'Sin apellido',
+            edad: parseInt(document.getElementById('crear-edad').value) || 0,
+            telefono: document.getElementById('crear-telefono').value || '---'
+        };
+        pacientesMock.unshift(nuevo);
+        document.getElementById('form-crear-paciente').reset();
+        loadPacientes();
+        alert('Paciente guardado (modo mock)');
+    }
+
+    function deletePaciente(id){
+        pacientesMock = pacientesMock.filter(p => p.id !== id);
+        loadPacientes();
+    }
+
+    function searchPacientesMock(query) {
+        const results = pacientesMock.filter(p => 
+            p.nombre.toLowerCase().includes(query.toLowerCase()) ||
+            p.apellido.toLowerCase().includes(query.toLowerCase())
+        );
+        const ul = document.getElementById('resultados-busqueda');
+        ul.innerHTML = results.map(p => `<li>• ${p.nombre} ${p.apellido}</li>`).join("");
+    }
+
+    // MEDICOS (maqueta)
+    let medicosMock = [];
+    function loadMedicos(){
+        if(medicosMock.length === 0){
+            medicosMock = [
+                {id:'M-1', nombre:'Dr. Andrés López', especialidad:'Cardiología', telefono:'+57 300 111 222'},
+                {id:'M-2', nombre:'Dra. Laura Ruiz', especialidad:'Pediatría', telefono:'+57 300 333 444'},
+            ];
+        }
+        const rows = medicosMock.map(m => `<tr>
+      <td>${m.id}</td><td>${m.nombre}</td><td>${m.especialidad}</td><td>${m.telefono}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" onclick="viewMedico('${m.id}')"><i class="bi bi-eye"></i></button>
+        <button class="btn btn-sm btn-outline-success" onclick="openEditMedico('${m.id}')"><i class="bi bi-pencil"></i></button>
+      </td>
+    </tr>`).join('');
+        document.getElementById('medicosTableBody').innerHTML = rows;
+    }
+    function openModalCrearMedico(){
+        document.getElementById('formMedico').reset();
+        new bootstrap.Modal(document.getElementById('modalMedico')).show();
+    }
+    function saveMedico(){
+        const nuevo = {
+            id: 'M-'+String(Math.floor(Math.random()*1000)),
+            nombre: document.getElementById('medico_nombre').value || 'Dr. Demo',
+            especialidad: document.getElementById('medico_especialidad').value || 'General',
+            telefono: document.getElementById('medico_telefono').value || '---'
+        };
+        medicosMock.unshift(nuevo);
+        bootstrap.Modal.getInstance(document.getElementById('modalMedico')).hide();
+        loadMedicos();
+        alert('Médico guardado (maqueta)');
+    }
+    function viewMedico(id){
+        alert('Ver médico: ' + id);
+    }
+    function openEditMedico(id){
+        const m = medicosMock.find(x => x.id === id);
+        if(!m) return;
+        document.getElementById('medico_nombre').value = m.nombre;
+        document.getElementById('medico_especialidad').value = m.especialidad;
+        document.getElementById('medico_telefono').value = m.telefono;
+        new bootstrap.Modal(document.getElementById('modalMedico')).show();
+    }
+
+    // CITAS (maqueta)
+    let citasMock = [];
+    function loadCitas(){
+        if(citasMock.length === 0){
+            citasMock = [
+                {id:'C-001', paciente:'Paciente 1', medico:'M-1', fecha:'2025-09-20 09:00', prioridad:'NORMAL'},
+                {id:'C-002', paciente:'Paciente 2', medico:'M-2', fecha:'2025-09-21 10:00', prioridad:'URGENTE'},
+            ];
+        }
+        const rows = citasMock.map(c => `<tr>
+      <td>${c.id}</td><td>${c.paciente}</td><td>${c.medico}</td><td>${c.fecha}</td>
+      <td><span class="badge ${c.prioridad==='EMERGENCIA'?'bg-danger':c.prioridad==='URGENTE'?'bg-warning text-dark':'bg-success'}">${c.prioridad}</span></td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" onclick="openCitaDetail('${c.id}')"><i class="bi bi-eye"></i></button>
+        <button class="btn btn-sm btn-outline-danger" onclick="confirmDeleteCita('${c.id}')"><i class="bi bi-trash"></i></button>
+      </td>
+    </tr>`).join('');
+        document.getElementById('citasTableBody').innerHTML = rows;
+    }
+    function openModalCrearCita(){
+        document.getElementById('formCita').reset();
+        // cargar selects con medicos/pacientes demo
+        const sp = document.getElementById('cita_paciente');
+        sp.innerHTML = pacientesMock.map(p => `<option value="${p.id}">${p.nombre} (${p.id})</option>`).join('');
+        const sm = document.getElementById('cita_medico');
+        sm.innerHTML = medicosMock.map(m => `<option value="${m.id}">${m.nombre}</option>`).join('');
+        new bootstrap.Modal(document.getElementById('modalCita')).show();
+    }
+    function saveCita(){
+        const nuevo = {
+            id: 'C-'+String(Math.floor(Math.random()*1000)),
+            paciente: document.getElementById('cita_paciente').value || 'Paciente X',
+            medico: document.getElementById('cita_medico').value || 'M-X',
+            fecha: document.getElementById('cita_fecha').value || '2025-09-30 10:00',
+            prioridad: document.getElementById('cita_prioridad').value || 'NORMAL'
+        };
+        citasMock.unshift(nuevo);
+        bootstrap.Modal.getInstance(document.getElementById('modalCita')).hide();
+        loadCitas();
+        alert('Cita creada (maqueta)');
+    }
+    function openCitaDetail(id){
+        alert('Ver detalle de cita ' + id + ' (maqueta)');
+    }
+    function confirmDeleteCita(id){
+        if(confirm('Eliminar cita ' + id + '?')) {
+            citasMock = citasMock.filter(c => c.id !== id);
+            loadCitas();
+        }
+    }
+    function deleteCita(id){ confirmDeleteCita(id); }
+
+    // CONSULTAS (maqueta)
+    let consultasMock = [];
+    function loadConsultas(){
+        if(consultasMock.length === 0){
+            consultasMock = [
+                {id:'CONS-01', cita:'C-001', medico:'M-1', paciente:'Paciente 1', resumen:'Consulta normal', fecha:'2025-09-10'},
+            ];
+        }
+        document.getElementById('consultasTableBody').innerHTML = consultasMock.map(c => `<tr>
+      <td>${c.id}</td><td>${c.cita}</td><td>${c.medico}</td><td>${c.paciente}</td><td>${c.resumen}</td><td>${c.fecha}</td>
+    </tr>`).join('');
+    }
+    function openModalRegistroConsulta(){
+        alert('Abrir modal registrar consulta (maqueta)');
+    }
+
+    // USUARIOS (maqueta)
+    let usuariosMock = [];
+    function loadUsuarios(){
+        if(usuariosMock.length === 0){
+            usuariosMock = [
+                {id:'U-1', username:'admin', rol:'ADMIN', asociado:'-' },
+                {id:'U-2', username:'med1', rol:'MEDICO', asociado:'M-1' },
+            ];
+        }
+        document.getElementById('usuariosTableBody').innerHTML = usuariosMock.map(u => `<tr>
+      <td>${u.id}</td><td>${u.username}</td><td>${u.rol}</td><td>${u.asociado}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary" onclick="viewUsuario('${u.id}')"><i class="bi bi-eye"></i></button>
+        <button class="btn btn-sm btn-outline-success" onclick="openModalCrearUsuario()"><i class="bi bi-pencil"></i></button>
+      </td>
+    </tr>`).join('');
+    }
+    function openModalCrearUsuario(){
+        document.getElementById('formUsuario').reset();
+        new bootstrap.Modal(document.getElementById('modalUsuario')).show();
+    }
+    function saveUsuario(){
+        const nuevo = {
+            id: 'U-'+String(Math.floor(Math.random()*1000)),
+            username: document.getElementById('usuario_username').value || 'userX',
+            rol: document.getElementById('usuario_rol').value,
+            asociado: document.getElementById('usuario_asociado').value || '-'
+        };
+        usuariosMock.unshift(nuevo);
+        bootstrap.Modal.getInstance(document.getElementById('modalUsuario')).hide();
+        loadUsuarios();
+        alert('Usuario creado (maqueta)');
+    }
+    function viewUsuario(id){ alert('Ver usuario ' + id); }
+
+    // REPORTES (maqueta)
+    function loadReportes(){ 
+        document.getElementById('reportePreview').textContent = 'Seleccione un tipo y presione "Generar"'; 
+    }
+    function generarReporte(){
+        const tipo = document.getElementById('reporteTipo').value;
+        document.getElementById('reportePreview').textContent = 'Reporte ' + tipo + ' generado (maqueta).';
+    }
+    function exportPacientes(){ 
+        alert('Exportar pacientes CSV (maqueta)'); 
+    }
+
+    // SISTEMA
+    function loadSystemInfo(){
+        document.getElementById('systemLogs').textContent = '2025-09-15 12:00 INFO: Sistema iniciado\\n2025-09-15 12:10 WARN: Backup pendiente';
+    }
+    function saveConfig(){ 
+        alert('Guardar configuración (maqueta)'); 
+    }
+
+    // util: debounce simple
+    let debounceTimer;
+    function debouncedSearchPacientes(){
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(()=> {
+            const q = document.getElementById('pacienteSearch').value.trim();
+            if(!q) {
+                loadPacientes();
+                document.getElementById('resultados-busqueda').innerHTML = '';
+                return;
+            }
+            
+            // Try API search first, fallback to mock
+            searchPacientesAPI(q);
+            
+            // Also update table with filtered results
+            const results = pacientesMock.filter(p => 
+                p.nombre.toLowerCase().includes(q.toLowerCase()) || 
+                p.apellido.toLowerCase().includes(q.toLowerCase()) ||
+                (p.documento && p.documento.toLowerCase().includes(q.toLowerCase()))
+            );
+            document.getElementById('pacientesTableBody').innerHTML = results.map(p => `<tr>
+          <td>${p.id}</td><td>${p.nombre}</td><td>${p.apellido || p.documento}</td><td>${p.edad || '-'}</td><td>${p.telefono}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary" onclick="viewPaciente('${p.id}')"><i class="bi bi-eye"></i></button>
+          </td></tr>`).join('');
+        }, 300);
+    }
+
+    // Filter functions for citas
+    function filtrarCitas(){
+        alert('Filtrar citas (funcionalidad pendiente)');
+    }
+
+    // inicialización
+    (async function init(){
+        const ok = await ensureAuth();
+        if(!ok) return;
+        loadDashboardMock();
+        showSection('dashboard');
+    })();
+</script>
+</body>
+</html>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" onclick="savePaciente()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Crear Usuario -->
+<div class="modal fade" id="modalUsuario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content card-rounded">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formUsuario">
+                    <div class="mb-2">
+                        <label class="form-label">Username</label>
+                        <input id="usuario_username" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Contraseña</label>
+                        <input id="usuario_password" type="password" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Rol</label>
+                        <select id="usuario_rol" class="form-select">
+                            <option value="ADMIN">ADMIN</option>
+                            <option value="MEDICO">MEDICO</option>
+                            <option value="PACIENTE">PACIENTE</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Asociado ID</label>
+                        <input id="usuario_asociado" class="form-control" placeholder="ID paciente o médico (opcional)">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveUsuario()">Crear Usuario</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Crear/Editar Médico -->
+<div class="modal fade" id="modalMedico" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content card-rounded">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalMedicoTitle">Crear Médico</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formMedico">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre</label>
+                            <input id="medico_nombre" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Apellido</label>
+                            <input id="medico_apellido" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Especialidad</label>
+                            <input id="medico_especialidad" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Teléfono</label>
+                            <input id="medico_telefono" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input id="medico_email" type="email" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Documento</label>
+                            <input id="medico_documento" class="form-control">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-success" onclick="saveMedico()">Guardar Médico</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Crear/Editar Cita -->
+<div class="modal fade" id="modalCita" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content card-rounded">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCitaTitle">Crear Cita</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formCita">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Paciente</label>
+                            <select id="cita_paciente" class="form-select" required>
+                                <option value="">Seleccionar paciente</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Médico</label>
+                            <select id="cita_medico" class="form-select" required>
+                                <option value="">Seleccionar médico</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha y hora</label>
+                            <input id="cita_fecha" type="datetime-local" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Prioridad</label>
+                            <select id="cita_prioridad" class="form-select" required>
+                                <option value="NORMAL">Normal</option>
+                                <option value="URGENTE">Urgente</option>
+                                <option value="EMERGENCIA">Emergencia</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Motivo</label>
+                            <textarea id="cita_motivo" class="form-control" rows="3" placeholder="Describe el motivo de la cita"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-success" onclick="saveCita()">Crear Cita</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Registrar Consulta -->
+<div class="modal fade" id="modalConsulta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content card-rounded">
+            <div class="modal-header">
+                <h5 class="modal-title">Registrar Consulta Médica</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formConsulta">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Paciente</label>
+                            <select id="consulta_paciente" class="form-select" required>
+                                <option value="">Seleccionar paciente</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Médico</label>
+                            <select id="consulta_medico" class="form-select" required>
+                                <option value="">Seleccionar médico</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha</label>
+                            <input id="consulta_fecha" type="datetime-local" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Diagnóstico</label>
+                            <input id="consulta_diagnostico" class="form-control" placeholder="Ej: Hipertensión arterial" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Tratamiento</label>
+                            <textarea id="consulta_tratamiento" class="form-control" rows="4" placeholder="Describe el tratamiento prescrito"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Observaciones</label>
+                            <textarea id="consulta_observaciones" class="form-control" rows="3" placeholder="Observaciones adicionales"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveConsulta()">Registrar Consulta</button>
+            </div>
+        </div>
+    </div>
+</div>

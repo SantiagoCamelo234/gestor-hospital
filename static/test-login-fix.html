@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Login Fix</h1>
+    
+    <div class="test-section">
+        <h3>1. Test de Login</h3>
+        <input type="text" id="testUsername" placeholder="Username" value="admin">
+        <input type="password" id="testPassword" placeholder="Password" value="admin123">
+        <button onclick="testLogin()">Probar Login</button>
+        <div id="loginResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. Test de Token</h3>
+        <button onclick="testToken()">Verificar Token</button>
+        <div id="tokenResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Test de Endpoint /me</h3>
+        <button onclick="testMe()">Probar /me</button>
+        <div id="meResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>4. Limpiar Datos</h3>
+        <button onclick="clearData()">Limpiar localStorage</button>
+    </div>
+
+    <script>
+        async function testLogin() {
+            const username = document.getElementById('testUsername').value;
+            const password = document.getElementById('testPassword').value;
+            const resultDiv = document.getElementById('loginResult');
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('username', data.username);
+                    localStorage.setItem('userId', data.id);
+                    localStorage.setItem('rol', data.rol);
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Login Exitoso</h4>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    const error = await response.text();
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Error en Login</h4>
+                            <p>${error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Error de Conexión</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function testToken() {
+            const resultDiv = document.getElementById('tokenResult');
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            const rol = localStorage.getItem('rol');
+            
+            if (token) {
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ Token Encontrado</h4>
+                        <p><strong>Token:</strong> ${token.substring(0, 20)}...</p>
+                        <p><strong>Username:</strong> ${username}</p>
+                        <p><strong>Rol:</strong> ${rol}</p>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ No hay token</h4>
+                        <p>Haz login primero</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function testMe() {
+            const resultDiv = document.getElementById('meResult');
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ No hay token</h4>
+                        <p>Haz login primero</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                const authToken = token.startsWith('Bearer ') ? token : 'Bearer ' + token;
+                const response = await fetch('http://localhost:8080/api/auth/me', {
+                    headers: { 'Authorization': authToken }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ Endpoint /me funciona</h4>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    const error = await response.text();
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ Error en /me</h4>
+                            <p>${error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Error de Conexión</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function clearData() {
+            localStorage.clear();
+            document.getElementById('loginResult').innerHTML = '';
+            document.getElementById('tokenResult').innerHTML = '';
+            document.getElementById('meResult').innerHTML = '';
+            alert('Datos limpiados');
+        }
+        
+        // Auto-cargar datos al iniciar
+        window.onload = function() {
+            testToken();
+        };
+    </script>
+</body>
+</html>

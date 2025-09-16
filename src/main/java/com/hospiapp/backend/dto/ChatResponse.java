@@ -18,3 +18,14 @@ public class ChatResponse {
     private String sessionId;
     private boolean isHelpful;
 }
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>HospiApp · Panel Administrador</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="css/admin.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="d-flex">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar d-flex flex-column p-3">
+        <div class="mb-4 text-center">
+            <h4 class="mb-0 fw-bold">🏥 HospiApp</h4>
+            <small>Panel Administrador</small>
+        </div>
+
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link active" href="#" data-section="dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a class="nav-link" href="#" data-section="pacientes"><i class="bi bi-people-fill me-2"></i> Pacientes</a>
+            <a class="nav-link" href="#" data-section="medicos"><i class="bi bi-person-badge-fill me-2"></i> Médicos</a>
+            <a class="nav-link" href="#" data-section="citas"><i class="bi bi-calendar-check-fill me-2"></i> Citas</a>
+            <a class="nav-link" href="#" data-section="consultas"><i class="bi bi-journal-text me-2"></i> Consultas</a>
+            <a class="nav-link" href="#" data-section="usuarios"><i class="bi bi-shield-lock-fill me-2"></i> Usuarios</a>
+            <a class="nav-link" href="#" data-section="reportes"><i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Reportes</a>
+            <a class="nav-link" href="#" data-section="sistema"><i class="bi bi-gear-fill me-2"></i> Sistema</a>
+        </nav>
+
+        <div class="mt-auto pt-3 small text-center">
+            <div>Conectado como <b>ADMIN</b></div>
+            <button class="btn btn-outline-light btn-sm mt-2" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="flex-fill">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-light d-lg-none" id="sidebarToggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <h5 class="mb-0">Panel Administrador</h5>
+                <small class="small-muted ms-2">Gestión completa — pacientes, médicos, citas y reportes</small>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="input-group" style="width:320px;">
+                    <input id="globalSearch" class="form-control form-control-sm" placeholder="Buscar paciente, médico, cita..." onkeydown="if(event.key==='Enter') globalSearchDo()">
+                    <button class="btn btn-outline-secondary btn-sm" onclick="globalSearchDo()"><i class="bi bi-search"></i></button>
+                </div>
+                <div class="d-flex align-items-center">
+                    <img src="https://i.pravatar.cc/40?u=admin" class="rounded-circle me-2" alt="admin">
+                    <div class="text-end">
+                        <div style="font-weight:700">Administrador</div>
+                        <div class="small-muted">hospiadmin@ejemplo.com</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <main class="p-4">
+            <!-- DASHBOARD -->
+            <section id="dashboardSection">
+                <div class="container-fluid">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <div class="card card-rounded p-3 shadow-sm">
+                                <div class="small-muted">Pacientes</div>
+                                <div class="stat text-primary" id="statPacientes">0</div>
+                                <div class="small-muted">Registrados</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-rounded p-3 shadow-sm">
+                                <div class="small-muted">Médicos</div>
+                                <div class="stat text-success" id="statMedicos">0</div>
+                                <div class="small-muted">Activos</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-rounded p-3 shadow-sm">
+                                <div class="small-muted">Citas</div>
+                                <div class="stat text-warning" id="statCitas">0</div>
+                                <div class="small-muted">Programadas</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-rounded p-3 shadow-sm">
+                                <div class="small-muted">Consultas</div>
+                                <div class="stat text-danger" id="statConsultas">0</div>
+                                <div class="small-muted">Realizadas</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-lg-8">
+                            <div class="card p-3 card-rounded shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0">Últimas citas</h6>
+                                    <small class="small-muted">Actualizado hace <span id="lastUpdate">ahora</span></small>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th><th>Paciente</th><th>Médico</th><th>Fecha</th><th>Prioridad</th><th>Acciones</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="latestCitasTable">
+                                        <!-- filas generadas dinámicamente -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="card p-3 card-rounded shadow-sm">
+                                <h6 class="mb-3">Atajos</h6>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" onclick="showSection('pacientes')"><i class="bi bi-people-fill me-1"></i> Gestionar Pacientes</button>
+                                    <button class="btn btn-success" onclick="showSection('medicos')"><i class="bi bi-person-badge-fill me-1"></i> Gestionar Médicos</button>
+                                    <button class="btn btn-warning" onclick="showSection('citas')"><i class="bi bi-calendar3 me-1"></i> Gestionar Citas</button>
+                                    <button class="btn btn-outline-secondary" onclick="showSection('reportes')"><i class="bi bi-file-earmark-bar-graph me-1"></i> Generar Reporte</button>
+                                </div>
+                            </div>
+
+                            <div class="card p-3 mt-3 card-rounded shadow-sm">
+                                <h6 class="mb-3">Notificaciones</h6>
+                                <ul class="list-unstyled mb-0 small" id="notificationsList">
+                                    <li>✔️ Base de datos ok</li>
+                                    <li>⚠️ 2 citas sin confirmar</li>
+                                    <li>🆕 1 usuario pendiente</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PACIENTES -->
+            <section id="pacientesSection" style="display:none;">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Gestión de Pacientes</h4>
+                        <div>
+                            <button class="btn btn-outline-primary me-2" onclick="exportPacientes()">Exportar CSV</button>
+                            <button class="btn btn-primary" onclick="openModalCrearPaciente()">➕ Nuevo Paciente</button>
+                        </div>
+                    </div>
+
+                    <!-- Formulario Crear -->
+                    <div class="card p-3 card-rounded shadow-sm mb-3">
+                        <h5 class="mb-3">Crear Paciente</h5>
+                        <form id="form-crear-paciente" class="row g-2">
+                            <div class="col-md-6">
+                                <input type="text" id="crear-nombre" placeholder="Nombre" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="crear-apellido" placeholder="Apellido" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="number" id="crear-edad" placeholder="Edad" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" id="crear-telefono" placeholder="Teléfono" class="form-control">
+                            </div>
+                            <div class="col-12">
+                                <textarea id="crear-direccion" placeholder="Dirección" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Crear Paciente</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Buscador -->
+                    <div class="card p-3 card-rounded shadow-sm mb-3">
+                        <h5 class="mb-3">Buscar Paciente</h5>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <input id="pacienteSearch" class="form-control" placeholder="Buscar por nombre, apellido o documento..." oninput="debouncedSearchPacientes()">
+                            </div>
+                            <div class="col-md-6 text-end small-muted">Resultados: <span id="pacientesCount">0</span></div>
+                        </div>
+                        <ul id="resultados-busqueda" class="list-unstyled mt-3 small-muted"></ul>
+                    </div>
+
+                    <!-- Lista de Pacientes -->
+                    <div class="card p-3 card-rounded shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Lista de Pacientes</h5>
+                            <button onclick="listarPacientes()" class="btn btn-success btn-sm">Refrescar Lista</button>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                <tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Edad</th><th>Teléfono</th><th>Acciones</th></tr>
+                                </thead>
+                                <tbody id="pacientesTableBody">
+                                <!-- dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <nav class="mt-3" aria-label="paginacion">
+                            <ul class="pagination" id="pacientesPagination"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MEDICOS -->
+            <section id="medicosSection" style="display:none;">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Médicos</h4>
+                        <div>
+                            <button class="btn btn-primary" onclick="openModalCrearMedico()">➕ Nuevo Médico</button>
+                        </div>
+                    </div>
+
+                    <div class="card p-3 card-rounded shadow-sm">
+                        <div class="table-wrapper">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                <tr><th>ID</th><th>Nombre</th><th>Especialidad</th><th>Teléfono</th><th>Acciones</th></tr>
+                                </thead>
+                                <tbody id="medicosTableBody">
+                                <!-- dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CITAS -->
+            <section id="citasSection" style="display:none;">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Citas</h4>
+                        <div>
+                            <button class="btn btn-outline-secondary me-2" onclick="filtrarCitas()">Filtrar</button>
+                            <button class="btn btn-success" onclick="openModalCrearCita()">➕ Crear Cita</button>
+                        </div>
+                    </div>
+
+                    <div class="card p-3 card-rounded shadow-sm">
+                        <div class="table-wrapper">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                <tr><th>ID</th><th>Paciente</th><th>Médico</th><th>Fecha</th><th>Prioridad</th><th>Acciones</th></tr>
+                                </thead>
+                                <tbody id="citasTableBody">
+                                <!-- dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONSULTAS -->
+            <section id="consultasSection" style="display:none;">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Consultas</h4>
+                        <div>
+                            <button class="btn btn-outline-primary me-2" onclick="openModalRegistroConsulta()">Registrar Consulta</button>
+                        </div>
+                    </div>
+
+                    <div class="card p-3 card-rounded shadow-sm">
+                        <div class="table-wrapper">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                <tr><th>ID</th><th>Cita</th><th>Médico</th><th>Paciente</th><th>Resumen</th><th>Fecha</th></tr>
+                                </thead>
+                                <tbody id="consultasTableBody">
+                                <!-- dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- USUARIOS -->
+            <section id="usuariosSection" style="display:none;">
+                <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Usuarios del Sistema</h4>
+                        <div>
+                            <button class="btn btn-primary" onclick="openModalCrearUsuario()">➕ Nuevo Usuario</button>
+                        </div>
+                    </div>
+
+                    <div class="card p-3 card-rounded shadow-sm">
+                        <div class="table-wrapper">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                <tr><th>ID</th><th>Username</th><th>Rol</th><th>Asociado</th><th>Acciones</th></tr>
+                                </thead>
+                                <tbody id="usuariosTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- REPORTES -->
+            <section id="reportesSection" style="display:none;">
+                <div class="container-fluid">
+                    <h4>Reportes</h4>
+                    <div class="card p-3 card-rounded shadow-sm">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Tipo de reporte</label>
+                                <select id="reporteTipo" class="form-select mb-2">
+                                    <option value="pacientes">Pacientes</option>
+                                    <option value="medicos">Médicos</option>
+                                    <option value="citas">Citas</option>
+                                    <option value="consultas">Consultas</option>
+                                </select>
+                                <button class="btn btn-primary w-100" onclick="generarReporte()">Generar</button>
+                            </div>
+                            <div class="col-md-8">
+                                <div id="reportePreview" class="border rounded p-3" style="min-height:160px;">
+                                    Previsualización del reporte...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SISTEMA -->
+            <section id="sistemaSection" style="display:none;">
+                <div class="container-fluid">
+                    <h4>Sistema</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card p-3 card-rounded shadow-sm mb-3">
+                                <h6>Logs recientes</h6>
+                                <pre id="systemLogs" style="max-height:300px;overflow:auto;background:#f8f9fa;padding:12px;border-radius:8px;">No hay logs en esta maqueta</pre>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card p-3 card-rounded shadow-sm mb-3">
+                                <h6>Configuraciones</h6>
+                                <div class="mb-2">
+                                    <label class="form-label small-muted">Puerto API</label>
+                                    <input id="cfgApiPort" class="form-control" value="8080">
+                                </div>
+                                <button class="btn btn-outline-secondary" onclick="saveConfig()">Guardar configuración</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="border-top">
+            <div class="d-flex justify-content-between">
+                <div>© HospiApp</div>
+                <div class="small-muted">Versión demo · Interfaz de administración</div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/admin.js" defer></script>
+</body>
+</html>

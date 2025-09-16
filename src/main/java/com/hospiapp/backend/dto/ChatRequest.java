@@ -11,3 +11,14 @@ public class ChatRequest {
     private String message;
     private String sessionId; // Para futuras mejoras de contexto
 }
+
+
+
+
+
+
+
+
+
+
+

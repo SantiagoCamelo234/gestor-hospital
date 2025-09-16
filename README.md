@@ -157,3 +157,14 @@ Para dudas sobre la implementación, contactar al desarrollador del backend.
 
 ---
 **Nota**: Esta API está diseñada para desarrollo local. Para producción se requieren configuraciones adicionales de seguridad y base de datos.
+
+
+
+
+
+
+
+
+
+
+

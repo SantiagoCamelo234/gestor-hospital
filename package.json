@@ -1,0 +1,36 @@
+{
+  "name": "hospiapp-frontend",
+  "version": "1.0.0",
+  "description": "Frontend para HospiApp - Sistema de Gestión Hospitalaria",
+  "main": "index.js",
+  "scripts": {
+    "start": "lite-server -c bs-config.json",
+    "dev": "lite-server -c bs-config.json",
+    "build": "echo 'No build process needed for static files'",
+    "test": "echo 'No tests configured'"
+  },
+  "keywords": [
+    "hospital",
+    "management",
+    "frontend",
+    "javascript",
+    "bootstrap"
+  ],
+  "author": "HospiApp Team",
+  "license": "MIT",
+  "devDependencies": {
+    "lite-server": "^2.6.1"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.3",
+    "chart.js": "^4.4.0"
+  }
+}
+
+
+
+
+
+
+
+

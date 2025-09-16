@@ -71,18 +71,35 @@ public class AuthService {
         if (!passwordEncoder.matches(password, usuario.getPassword())) {
             throw new RuntimeException("Contraseña incorrecta");
         }
-        String token = UUID.randomUUID().toString();
+        
+        // Generar token simple
+        String token = "Bearer " + UUID.randomUUID().toString();
         sesiones.put(token, usuario);
         return token;
     }
 
-    public Usuario validarToken(String token) {
-        Usuario usuario = sesiones.get(token);
-        if (usuario == null) throw new RuntimeException("Token inválido o expirado");
-        return usuario;
-    }
-
     public void logout(String token) {
         sesiones.remove(token);
+    }
+
+    public Usuario getCurrentUser(String token, String username) {
+        if (token != null && token.startsWith("Bearer ")) {
+            Usuario usuario = sesiones.get(token);
+            if (usuario != null) {
+                return usuario;
+            }
+        }
+        
+        if (username != null) {
+            return usuarioRepo.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        }
+        
+        throw new RuntimeException("Usuario no autenticado");
+    }
+
+    public Usuario findByUsername(String username) {
+        return usuarioRepo.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 }

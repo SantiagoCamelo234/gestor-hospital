@@ -69,4 +69,10 @@ public class ConsultaController {
     public List<String> autocompletarDiagnostico(@RequestParam String prefijo) {
         return trieDiagnosticos.startsWith(prefijo, 5);
     }
+
+    // Listar todas las consultas
+    @GetMapping
+    public List<ConsultaMedica> listarTodas() {
+        return service.listarTodas();
+    }
 }

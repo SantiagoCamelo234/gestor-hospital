@@ -7,6 +7,9 @@ import com.hospiapp.backend.services.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -32,7 +35,16 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         try {
             String token = authService.login(loginDTO.getUsername(), loginDTO.getPassword());
-            return ResponseEntity.ok().body("{\"token\": \"" + token + "\"}");
+            Usuario usuario = authService.findByUsername(loginDTO.getUsername());
+            
+            // Crear respuesta con token y datos del usuario
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("id", usuario.getId());
+            response.put("username", usuario.getUsername());
+            response.put("rol", usuario.getRol().toString());
+            
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new RuntimeException("Error en el login: " + e.getMessage());
         }
@@ -48,6 +60,16 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(@RequestHeader(value = "Authorization", required = false) String token,
+                                          @RequestParam(value = "username", required = false) String username) {
+        try {
+            Usuario usuario = authService.getCurrentUser(token, username);
+            return ResponseEntity.ok(usuario);
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("{\"error\": \"Usuario no autenticado\"}");
+        }
+    }
 
 }
 

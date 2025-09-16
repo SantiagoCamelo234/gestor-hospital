@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Endpoint</title>
+</head>
+<body>
+    <h1>Test de Endpoint</h1>
+    <button onclick="testEndpoint()">Probar Endpoint</button>
+    <div id="result"></div>
+
+    <script>
+        async function testEndpoint() {
+            const resultDiv = document.getElementById('result');
+            const pacienteId = '8f08273a-abac-4638-9201-9a252236198f'; // ID del paciente del error
+            
+            try {
+                const response = await fetch(`http://localhost:8080/api/consultas/pacientes/${pacienteId}/consultas`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+                        <div style="color: green;">
+                            <h3>✅ Endpoint funciona</h3>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    const error = await response.text();
+                    resultDiv.innerHTML = `
+                        <div style="color: red;">
+                            <h3>❌ Error ${response.status}</h3>
+                            <p>${error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div style="color: red;">
+                        <h3>❌ Error de conexión</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
+

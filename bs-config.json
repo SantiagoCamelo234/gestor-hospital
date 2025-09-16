@@ -1,0 +1,13 @@
+{
+  "server": {
+    "baseDir": "static",
+    "port": 3000,
+    "open": "login.html"
+  },
+  "files": [
+    "static/**/*.html",
+    "static/**/*.css", 
+    "static/**/*.js",
+    "static/**/*.json"
+  ]
+}

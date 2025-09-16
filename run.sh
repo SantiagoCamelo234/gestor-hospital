@@ -18,3 +18,14 @@ echo "La API estará disponible en: http://localhost:8080"
 echo "Para detener el servidor presiona Ctrl+C"
 echo
 mvn spring-boot:run
+
+
+
+
+
+
+
+
+
+
+

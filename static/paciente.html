@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HospiApp - Panel Paciente</title>
+    <style>
+        /* ====== Reset & Base ====== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            background: #f0f4f8;
+            color: #2d3748;
+        }
+
+        h2, h3 {
+            margin-bottom: 12px;
+        }
+
+        /* ====== Sidebar ====== */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #3182ce, #2b6cb0);
+            color: #fff;
+            height: 100vh;
+            padding: 30px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            border-right: 4px solid #2c5282;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-size: 1.6em;
+            margin-bottom: 30px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            flex: 1;
+        }
+
+        .sidebar ul li {
+            margin: 18px 0;
+        }
+
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .sidebar ul li a span {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        /* ====== Main ====== */
+        .main {
+            margin-left: 280px;
+            padding: 30px;
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2b6cb0;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+        .card h3 {
+            color: #2b6cb0;
+            margin-bottom: 15px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 15px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: #3182ce;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #2b6cb0;
+        }
+
+        ul.list {
+            padding-left: 20px;
+            color: #4a5568;
+        }
+
+        /* ====== Chatbot ====== */
+        .chatbot-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 65px;
+            height: 65px;
+            font-size: 26px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+        }
+
+        .chatbot-window {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            max-height: 450px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chatbot-header {
+            background: #3182ce;
+            color: white;
+            padding: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            font-size: 14px;
+            background: #f9fafb;
+        }
+
+        .chatbot-input {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            border: none;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .chatbot-input button {
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            cursor: pointer;
+        }
+
+        .chatbot-msg.user {
+            text-align: right;
+            margin: 6px 0;
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        .chatbot-msg.bot {
+            text-align: left;
+            margin: 6px 0;
+            color: #2b6cb0;
+            font-weight: 500;
+        }
+
+        /* Estilos para alertas y notificaciones */
+        .alert {
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid transparent;
+        }
+
+        .alert-info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .alert-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+        }
+
+        /* Estilos para cards y botones */
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .btn-group-vertical .btn {
+            margin-bottom: 5px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-outline-primary {
+            color: #3182ce;
+            border-color: #3182ce;
+            background-color: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            color: #fff;
+            background-color: #3182ce;
+            border-color: #3182ce;
+        }
+
+        .btn-outline-danger {
+            color: #e53e3e;
+            border-color: #e53e3e;
+            background-color: transparent;
+        }
+
+        .btn-outline-danger:hover {
+            color: #fff;
+            background-color: #e53e3e;
+            border-color: #e53e3e;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 4px;
+        }
+
+        .bg-success { background-color: #48bb78 !important; }
+        .bg-danger { background-color: #e53e3e !important; }
+        .bg-warning { background-color: #ed8936 !important; }
+
+        /* Toast notifications */
+        .toast-container {
+            z-index: 1055;
+        }
+
+        .toast {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>HospiApp</h2>
+    <ul>
+        <li><a href="#"><span>🏠</span>Inicio</a></li>
+        <li><a href="#"><span>📅</span>Mis Citas</a></li>
+        <li><a href="#"><span>📜</span>Historial</a></li>
+        <li><a href="#"><span>👤</span>Mi Perfil</a></li>
+        <li><a href="#"><span>💬</span>Chatbot</a></li>
+        <li><a href="#"><span>🚪</span>Cerrar Sesión</a></li>
+    </ul>
+</div>
+
+<!-- Main -->
+<div class="main">
+    <h2 class="section-title">Panel del Paciente</h2>
+
+    <div class="card">
+        <h3>Agendar Nueva Cita</h3>
+        <form id="formAgendarCita" onsubmit="agendarCita(event)">
+            <label>Fecha y Hora:</label>
+            <input type="datetime-local" id="cita_fecha" required>
+            <label>Médico:</label>
+            <select id="cita_medico" required>
+                <option value="">Seleccione un médico</option>
+            </select>
+            <label>Prioridad:</label>
+            <select id="cita_prioridad" required>
+                <option value="NORMAL">Normal</option>
+                <option value="URGENTE">Urgente</option>
+                <option value="EMERGENCIA">Emergencia</option>
+            </select>
+            <label>Motivo:</label>
+            <input type="text" id="cita_motivo" placeholder="Describe el motivo de tu cita">
+            <button type="submit" class="btn">Agendar Cita</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Mis Citas</h3>
+        <div id="misCitas">
+            <div class="alert alert-info">Cargando citas...</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Mi Historial Médico</h3>
+        <div id="miHistorial">
+            <div class="alert alert-info">Cargando historial...</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Mi Perfil</h3>
+        <form id="formPerfil" onsubmit="actualizarPerfil(event)">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label>Nombre:</label>
+                    <input type="text" id="perfil_nombre" required>
+                </div>
+                <div>
+                    <label>Apellido:</label>
+                    <input type="text" id="perfil_apellido" required>
+                </div>
+                <div>
+                    <label>Edad:</label>
+                    <input type="number" id="perfil_edad" min="0" max="120">
+                </div>
+                <div>
+                    <label>Teléfono:</label>
+                    <input type="tel" id="perfil_telefono">
+                </div>
+                <div>
+                    <label>Email:</label>
+                    <input type="email" id="perfil_email" required>
+                </div>
+                <div>
+                    <label>Documento:</label>
+                    <input type="text" id="perfil_documento">
+                </div>
+            </div>
+            <div>
+                <label>Dirección:</label>
+                <input type="text" id="perfil_direccion">
+            </div>
+            <button type="submit" class="btn">Actualizar Perfil</button>
+        </form>
+    </div>
+</div>
+
+<!-- Chatbot -->
+<button class="chatbot-btn" onclick="toggleChatbot()">💬</button>
+<div class="chatbot-window" id="chatbot">
+    <div class="chatbot-header">🤖 Asistente HospiApp</div>
+    <div class="chatbot-messages" id="messages"></div>
+    <div class="chatbot-input">
+        <input type="text" id="userInput" placeholder="Escribe tu mensaje...">
+        <button onclick="sendMessage()">Enviar</button>
+    </div>
+</div>
+
+<!-- Incluir el archivo JS externo -->
+<script src="js/paciente.js"></script>
+
+<script>
+    // Funcionalidad de cierre de sesión
+    function cerrarSesion() {
+        if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    }
+
+    // Agregar event listeners a los enlaces del sidebar
+    document.addEventListener('DOMContentLoaded', function() {
+        // Enlace de cierre de sesión
+        const logoutLink = document.querySelector('a[href="#"]:last-child');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                cerrarSesion();
+            });
+        }
+
+        // Enlace del chatbot
+        const chatbotLink = document.querySelector('a[href="#"]:nth-last-child(2)');
+        if (chatbotLink) {
+            chatbotLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleChatbot();
+            });
+        }
+    });
+</script>
+</body>
+</html>

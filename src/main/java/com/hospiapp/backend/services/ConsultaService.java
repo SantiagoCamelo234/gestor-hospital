@@ -52,4 +52,8 @@ public class ConsultaService {
     public List<ConsultaMedica> obtenerHistorial(String pacienteId) {
         return consultaRepo.findByPacienteId(pacienteId);
     }
+
+    public List<ConsultaMedica> listarTodas() {
+        return consultaRepo.findAll();
+    }
 }
